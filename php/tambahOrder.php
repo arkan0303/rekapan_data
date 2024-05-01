@@ -16,5 +16,5 @@ VALUES ('$nama_pembeli', '$nama_produk', $qty, $total_harga, '$alamat_pengiriman
 if ($insertData) {
     return;
 } else {
-    echo "add yang salah";
+    echo "Some errors occured";
 }

@@ -9,7 +9,7 @@
                     <h3 class="text-center">Tambah Order</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" class="mt-4">
+                    <form method="POST" class="mt-4" id="tambah_order">
                         <div class="mb-3">
                             <label for="nama_pembeli" class="form-label">Nama Pembeli</label>
                             <input type="text" class="form-control" id="nama_pembeli" name="nama_pembeli" placeholder="Masukkan nama pembeli" required>
@@ -31,7 +31,7 @@
                             <textarea name="alamat_pengiriman" id="alamat_pengiriman" rows="3" class="form-control" placeholder="Alamat pengiriman" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary btn-md">Tambah</button>
+                            <button type="submit" class="btn btn-primary btn-md" id="submit_order">Tambah</button>
                         </div>
                     </form>
                 </div>
@@ -41,7 +41,20 @@
 
     <div class="row mb-5">
         <div class="col-md-12" style="overflow-x: scroll;">
-            <button class="btn btn-success mb-3" id="export">Export Excel</button>
+            <form class="d-flex mb-3 gap-3">
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <label for="datefrom">Dari</label>
+                    <input type="date" class="form-control" name="datefrom" id="datefrom" value="<?= $_GET['datefrom'] ?? date('Y-m-d', strtotime('-30 days')); ?>">
+                </div>
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <label for="dateto">Sampai</label>
+                    <input type="date" class="form-control" name="dateto" id="dateto" value="<?= $_GET['dateto'] ?? date('Y-m-d'); ?>">
+                </div>
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                    <button class="btn btn-primary" type="submit">Filter Table</button>
+                    <button class="btn btn-success" id="export">Export Excel</button>
+                </div>
+            </form>
             <table class="table table-hover" id="table_export" data-excel-name="Rekapan data">
                 <thead>
                     <tr>
@@ -56,7 +69,14 @@
                 </thead>
                 <tbody>
                     <?php 
-                        $query = mysqli_query($conn, "SELECT * FROM orders ORDER BY id DESC");
+                        if (isset($_GET['datefrom']) && isset($_GET['dateto'])) {
+                            $sql = "SELECT * FROM orders WHERE tanggal_order >= DATE_FORMAT('$_GET[datefrom]', '%Y-%m-%d') AND tanggal_order <= DATE_FORMAT('$_GET[dateto]', '%Y-%m-%d') ORDER BY tanggal_order DESC";
+                        } else {
+                            $dateFrom = date('Y-m-d', strtotime('-30 days'));
+                            $dateTo = date('Y-m-d');
+                            $sql = "SELECT * FROM orders WHERE tanggal_order >= '$dateFrom' AND tanggal_order <= '$dateTo' ORDER BY tanggal_order DESC";
+                        }
+                        $query = mysqli_query($conn, $sql);
                         if (mysqli_num_rows($query)) {
                             $i = 1;
                             while ($row = mysqli_fetch_assoc($query)) {
