@@ -1,110 +1,75 @@
 <?php include "./layout/header.php"; ?>
-<?php include_once "./php/config.php"; ?>
 
-<div class="container-fluid mt-5">
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header">
-                    <h3 class="text-center">Tambah Order</h3>
-                </div>
-                <div class="card-body">
-                    <form method="POST" class="mt-4" id="tambah_order">
-                        <div class="mb-3">
-                            <label for="nama_pembeli" class="form-label">Nama Pembeli</label>
-                            <input type="text" class="form-control" id="nama_pembeli" name="nama_pembeli" placeholder="Masukkan nama pembeli" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nama_produk" class="form-label">Nama Produk</label>
-                            <input type="text" class="form-control" id="nama_produk" name="nama_produk" placeholder="Masukkan nama produk" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="qty" class="form-label">Qty</label>
-                            <input type="number" step="1" min="1" value="1" class="form-control" id="qty" name="qty" placeholder="Qty" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="total_harga" class="form-label">Total Harga (Rp)</label>
-                            <input type="text" class="form-control" id="total_harga" name="total_harga" placeholder="Total harga" required>
-                        </div>
-                        <div class="mb-5">
-                            <label for="alamat_pengiriman" class="form-label">Alamat Pengiriman</label>
-                            <textarea name="alamat_pengiriman" id="alamat_pengiriman" rows="3" class="form-control" placeholder="Alamat pengiriman" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary btn-md" id="submit_order">Tambah</button>
-                        </div>
-                    </form>
-                </div>
+<?php 
+    session_start();
+    
+    include_once "./php/config.php";
+
+    $unique_id = $_SESSION['unique_id'];
+    if (!isset($unique_id)) {
+        header("location: login.php");
+    }
+?>
+
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col">
+            <div class="d-flex">
+                <h4>Daftar Produk</h4>
             </div>
         </div>
     </div>
-
-    <div class="row mb-5">
-        <div class="col-md-12" style="overflow-x: scroll;">
-            <form class="d-flex mb-3 gap-3">
-                <div class="d-flex justify-content-between align-items-center gap-2">
-                    <label for="datefrom">Dari</label>
-                    <input type="date" class="form-control" name="datefrom" id="datefrom" value="<?= $_GET['datefrom'] ?? date('Y-m-d', strtotime('-30 days')); ?>">
-                </div>
-                <div class="d-flex justify-content-between align-items-center gap-2">
-                    <label for="dateto">Sampai</label>
-                    <input type="date" class="form-control" name="dateto" id="dateto" value="<?= $_GET['dateto'] ?? date('Y-m-d'); ?>">
-                </div>
-                <div class="d-flex justify-content-center align-items-center gap-2">
-                    <button class="btn btn-primary" type="submit">Filter Table</button>
-                    <button class="btn btn-success" id="export">Export Excel</button>
-                </div>
-            </form>
-            <table class="table table-hover" id="table_export" data-excel-name="Rekapan data">
-                <thead>
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-12">
+            <div class="alert d-none" role="alert" id="status_message">
+                
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-end gap-3 mb-4">
+                <a href="tambah-produk.php" class="btn btn-secondary">Tambah Produk</a>
+                <a class="btn btn-secondary">Tambah Order</a>
+            </div>
+            <table class="table table-hover table-light">
+                <thead class="table-dark">
                     <tr>
-                        <th>No</th>
-                        <th>Nama Pembeli</th>
-                        <th>Tanggal Order</th>
-                        <th>Nama Produk</th>
-                        <th>Qty</th>
-                        <th>Total Harga</th>
-                        <th>Alamat</th>
+                        <th scope="col" class="text-center">No</th>
+                        <th scope="col" class="text-center">Nama</th>
+                        <th scope="col" class="text-center">Gambar</th>
+                        <th scope="col" class="text-center">Harga</th>
+                        <th scope="col" class="text-center">Ppn</th>
+                        <th scope="col" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php 
-                        if (isset($_GET['datefrom']) && isset($_GET['dateto'])) {
-                            $sql = "SELECT * FROM orders WHERE tanggal_order >= DATE_FORMAT('$_GET[datefrom]', '%Y-%m-%d') AND tanggal_order <= DATE_FORMAT('$_GET[dateto]', '%Y-%m-%d') ORDER BY tanggal_order DESC";
-                        } else {
-                            $dateFrom = date('Y-m-d', strtotime('-30 days'));
-                            $dateTo = date('Y-m-d');
-                            $sql = "SELECT * FROM orders WHERE tanggal_order >= '$dateFrom' AND tanggal_order <= '$dateTo' ORDER BY tanggal_order DESC";
-                        }
-                        $query = mysqli_query($conn, $sql);
-                        if (mysqli_num_rows($query)) {
-                            $i = 1;
-                            while ($row = mysqli_fetch_assoc($query)) {
-                                echo "<tr>";
-                                echo "<td>$i</td>";
-                                echo "<td>" . $row['nama_pembeli'] . "</td>";
-                                echo "<td>" . date("d//m/Y", strtotime($row['tanggal_order'])) . "</td>";
-                                echo "<td>" . $row['nama_produk'] . "</td>";
-                                echo "<td>" . $row['qty'] . "</td>";
-                                echo "<td> Rp. " . number_format($row['total_harga'], 0, ',', ',') . "</td>";
-                                echo "<td>" . $row['alamat_pengiriman'] . "</td>";
-                                echo "<tr>";
-                                $i++;
-                            }
-                        } else {
-                            echo "<tr>";
-                            echo "<td colspan='8' align='center'>Belum ada data</td>";
-                            echo "</tr>";
-                        }
+                        $query = mysqli_query($conn, "SELECT id, nama_produk, gambar, harga, ppn FROM products ORDER BY id DESC")
                     ?>
+                    <?php if (mysqli_num_rows($query) < 1) : ?>
+                        <tr>
+                            <td colspan="6" class="text-center fw-bold">Tidak ada data.</td>
+                        </tr>
+                    <?php else : ?>
+                        <?php $i = 1; ?>
+                        <?php while ($row = mysqli_fetch_assoc($query)) : ?>
+                            <tr>
+                                <td class="text-center align-middle"><?= $i++; ?></td>
+                                <td class="text-center align-middle fw-bold"><?= $row['nama_produk']; ?></td>
+                                <td class="text-center"><img src="<?= './php/'. $row['gambar']; ?>" alt="<?= $row['nama_produk']; ?>" width="100" height="100" style="object-fit:contain;"></td>
+                                <td class="text-center align-middle money_format"><?= $row['harga']; ?></td>
+                                <td class="text-center align-middle"><?= $row['ppn']; ?>%</td>
+                                <td class="text-center align-middle"><button data-id="<?= $row['id']; ?>" class="btn btn-outline-danger btn-sm rounded" onclick="deleteProduct(this)">Delete</button></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<script src="./assets/js/table2excel.js"></script>
-<script src="./js/formOrder.js"></script>
-<script src="./js/tambahOrder.js"></script>
-<script src="./js/exportExcel.js"></script>
-<?php include "./layout/footer.php" ?>
+<script src="./js/listProduk.js"></script>
+<script src="./js/hapusProduk.js"></script>
+<?php include "./layout/footer.php"; ?>
