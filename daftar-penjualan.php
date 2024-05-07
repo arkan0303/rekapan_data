@@ -12,10 +12,11 @@
 ?>
 
 <div class="container mt-5">
-    <div class="row mb-5">
+<div class="row mb-5">
         <div class="col">
             <div class="d-flex">
-                <h4>Daftar Produk</h4>
+                <h4><a href="/" class="text-decoration-none text-dark">Daftar Produk ></a></h4>
+                <h4>Daftar Penjualan</h4>
             </div>
         </div>
     </div>
@@ -29,8 +30,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="d-flex justify-content-end gap-3 mb-4">
-                <a href="tambah-produk.php" class="btn btn-secondary">Tambah Produk</a>
-                <a href="daftar-penjualan.php" class="btn btn-secondary">Daftar Penjualan</a>
+                <a href="tambah-penjualan.php" class="btn btn-secondary">Tambah Data Penjualan</a>
             </div>
             <table class="table table-hover table-light">
                 <thead class="table-dark">
@@ -45,31 +45,40 @@
                 </thead>
                 <tbody>
                     <?php 
-                        $query = mysqli_query($conn, "SELECT id, nama_produk, gambar, harga, ppn FROM products ORDER BY id DESC")
+                        $query = mysqli_query(
+                            $conn,
+                            "SELECT 
+                                orders.id AS id,
+                                orders.nama_pembeli AS nama_pembeli,
+                                orders.alamat_pengiriman AS alamat,
+                                orders.tangggal_order AS tanggal_order,
+                                products.nama_produk AS nama_produk,
+                                SUM(order_products.quantity) AS quantity,
+                                orders.total_harga AS total_harga
+                            FROM 
+                                orders
+                            INNER JOIN 
+                                order_products ON orders.id = order_products.order_id
+                            INNER JOIN 
+                                products ON order_products.product_id = products.id
+                            GROUP BY 
+                                orders.id, products.nama_produk
+                            ORDER BY 
+                                orders.id;
+                        "
+                        );
                     ?>
                     <?php if (mysqli_num_rows($query) < 1) : ?>
                         <tr>
                             <td colspan="6" class="text-center fw-bold">Tidak ada data.</td>
                         </tr>
                     <?php else : ?>
-                        <?php $i = 1; ?>
-                        <?php while ($row = mysqli_fetch_assoc($query)) : ?>
-                            <tr>
-                                <td class="text-center align-middle"><?= $i++; ?></td>
-                                <td class="text-center align-middle fw-bold"><?= $row['nama_produk']; ?></td>
-                                <td class="text-center"><img src="<?= './php/'. $row['gambar']; ?>" alt="<?= $row['nama_produk']; ?>" width="100" height="100" style="object-fit:contain;"></td>
-                                <td class="text-center align-middle money_format"><?= $row['harga']; ?></td>
-                                <td class="text-center align-middle"><?= $row['ppn']; ?>%</td>
-                                <td class="text-center align-middle"><button data-id="<?= $row['id']; ?>" class="btn btn-outline-danger btn-sm rounded" onclick="deleteProduct(this)">Delete</button></td>
-                            </tr>
-                        <?php endwhile; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-<script src="./js/listProduk.js"></script>
-<script src="./js/hapusProduk.js"></script>
-<?php include "./layout/footer.php"; ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/4.0.9/jquery.inputmask.bundle.min.js" referrerpolicy="no-referrer"></script>
+<script src="./js/formProduct.js"></script>
+<?php include_once "./layout/footer.php" ?>
