@@ -1,12 +1,37 @@
 const buttonTambah = document.getElementById('tambah_produk');
 const productTable = document.getElementById('product_table');
 const productSelect = document.getElementById('product_select');
+const formPenjualan = document.getElementById('form_penjualan');
+const buttonSubmit = formPenjualan.querySelector("button[type='submit']");
+const buttonReset = formPenjualan.querySelector("button[type='reset']");
 
 const INITIAL_EMPTY_DATA_TEXT = 'Tidak ada data.';
 const DEFAULT_CELL_CLASS_NAME = 'text-center align-middle';
 const TOTAL_COLUMNS = 5;
 
+formPenjualan.onsubmit = (e) => {
+    e.preventDefault();
+};
+
 buttonTambah.addEventListener('click', insertProductTable);
+formPenjualan.addEventListener('reset', resetAll);
+buttonSubmit.addEventListener('click', submitPenjualan);
+
+function submitPenjualan() {
+    const namaPembeli = formPenjualan.querySelector(
+        "input[name='nama_pembeli']"
+    ).value;
+    const tanggalOrder = formPenjualan.querySelector(
+        "input[name='tanggal_order']"
+    ).value;
+    let totalHarga = document.getElementById('total_harga_produk').textContent;
+    totalHarga = totalHarga.replace(/[^\d]/g, '');
+}
+
+function resetAll() {
+    productTable.querySelector('tbody').innerHTML = '';
+    recreateInitialRow();
+}
 
 function insertProductTable() {
     const selectedOpt = productSelect.options[productSelect.selectedIndex];
