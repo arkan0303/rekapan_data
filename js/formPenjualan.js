@@ -4,6 +4,7 @@ const productSelect = document.getElementById('product_select');
 const formPenjualan = document.getElementById('form_penjualan');
 const buttonSubmit = formPenjualan.querySelector("button[type='submit']");
 const buttonReset = formPenjualan.querySelector("button[type='reset']");
+const statusMessage = document.getElementById('status_message');
 
 const INITIAL_EMPTY_DATA_TEXT = 'Tidak ada data.';
 const DEFAULT_CELL_CLASS_NAME = 'text-center align-middle';
@@ -26,6 +27,55 @@ function submitPenjualan() {
     ).value;
     let totalHarga = document.getElementById('total_harga_produk').textContent;
     totalHarga = totalHarga.replace(/[^\d]/g, '');
+    totalHarga = totalHarga.slice(0, -2);
+
+    let products = [];
+
+    const productIds = formPenjualan.querySelectorAll(
+        "input[name='id_produk']"
+    );
+    const productQtys = formPenjualan.querySelectorAll(
+        "input[name='qty_produk']"
+    );
+
+    productIds.forEach((productId, index) => {
+        const id = productId.value;
+        const qty = productQtys[index].value;
+        products.push({ productId: id, productQty: qty });
+    });
+
+    let payload = { namaPembeli, totalHarga, tanggalOrder, products };
+
+    const xhr = new XMLHttpRequest();
+    const url = 'php/simpanOrder.php';
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.LOADING) {
+            statusMessage.classList.add('d-none');
+        }
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            document.querySelectorAll('input').forEach((el) => {
+                el.removeAttribute('readonly');
+                el.setAttribute('disabled', true);
+            });
+            document.querySelectorAll('button').forEach((el) => {
+                el.setAttribute('disabled', true);
+            });
+            window.scrollTo(0, 0);
+            statusMessage.classList.remove('d-none');
+            if (xhr.responseText.toLocaleLowerCase().includes('berhasil')) {
+                statusMessage.classList.add('alert-success');
+                setTimeout(() => {
+                    location.href = '/daftar-penjualan.php';
+                }, 2000);
+            } else {
+                statusMessage.classList.add('alert-danger');
+            }
+            statusMessage.innerHTML = `<strong>${xhr.responseText}</strong>`;
+        }
+    };
+    xhr.send(JSON.stringify(payload));
 }
 
 function resetAll() {
@@ -172,8 +222,6 @@ function updateTotalHarga() {
         let price = parseInt(harga) * parseInt(qty);
         prices.push(price);
     });
-
-    console.log(prices);
 
     const totalHarga = prices.reduce((acc, curr) => acc + curr, 0);
     totalHargaTag.textContent = totalHarga.toLocaleString('id-ID', {
