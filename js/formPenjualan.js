@@ -18,10 +18,17 @@ buttonTambah.addEventListener('click', insertProductTable);
 formPenjualan.addEventListener('reset', resetAll);
 buttonSubmit.addEventListener('click', submitPenjualan);
 
+document.querySelectorAll('.btn-delete').forEach((el) => {
+    el.addEventListener('click', deleteRow);
+});
+
+document.querySelectorAll('.input-qty').forEach((el) => {
+    el.addEventListener('change', updateTotalHarga);
+});
+
 function submitPenjualan() {
-    const namaPembeli = formPenjualan.querySelector(
-        "input[name='nama_pembeli']"
-    ).value;
+    const namaPembeli = formPenjualan.querySelector('#customSearchInput').value;
+    const idPembeli = formPenjualan.querySelector('#customer_id').value;
     const tanggalOrder = formPenjualan.querySelector(
         "input[name='tanggal_order']"
     ).value;
@@ -44,10 +51,21 @@ function submitPenjualan() {
         products.push({ productId: id, productQty: qty });
     });
 
-    let payload = { namaPembeli, totalHarga, tanggalOrder, products };
+    let payload = {
+        namaPembeli,
+        totalHarga,
+        tanggalOrder,
+        products,
+        idPembeli: parseInt(idPembeli),
+    };
+
+    // If orderId is present, include it in the payload for updating
+    if (orderId !== '') {
+        payload.orderId = parseInt(orderId);
+    }
 
     const xhr = new XMLHttpRequest();
-    const url = 'php/simpanOrder.php';
+    const url = submitUrl; // Make sure submitUrl is correctly set for either insert or update
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {

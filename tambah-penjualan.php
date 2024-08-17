@@ -1,14 +1,17 @@
+<?php
+$cssFiles = ["./css/dropdownSearch.css"]
+    ?>
 <?php include "./layout/header.php"; ?>
 
-<?php 
-    session_start();
-    
-    include_once "./php/config.php";
+<?php
+session_start();
 
-    $unique_id = $_SESSION['unique_id'];
-    if (!isset($unique_id)) {
-        header("location: login.php");
-    }
+include_once "./php/config.php";
+
+$unique_id = $_SESSION['unique_id'];
+if (!isset($unique_id)) {
+    header("location: login.php");
+}
 ?>
 
 <div class="container my-5">
@@ -31,22 +34,43 @@
                         <h3 class="text-center">Form Tambah Penjualan</h3>
                         <div>
                             <div class="mb-3">
-                                <label for="nama_pembeli" class="form-label">Nama Pembeli <span class="text-danger">*</span></label>
-                                <input type="text" name="nama_pembeli" id="nama_pembeli" class="form-control" required>
+                                <label for="nama_pembeli" class="form-label">Nama Pembeli <span
+                                        class="text-danger">*</span></label>
+                                <div class="custom-dropdown-search">
+                                    <div class="custom-input-container">
+                                        <input type="text" id="customSearchInput" placeholder="Cari/Pilih..."
+                                            class="custom-form-control" />
+                                        <button id="customSearchBtn" class="custom-search-btn">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <button id="customClearBtn" class="custom-clear-btn" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div id="customDropdownMenu" class="custom-dropdown-menu"></div>
+                                </div>
+
+                                <input type="hidden" id="customer_id">
+
                             </div>
                             <div class="mb-3">
-                                <label for="tanggal_order" class="form-label">Tanggal Order <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" name="tanggal_order" id="tanggal_order" value="<?= date('Y-m-d'); ?>" required>
+                                <label for="tanggal_order" class="form-label">Tanggal Order <span
+                                        class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="tanggal_order" id="tanggal_order"
+                                    value="<?= date('Y-m-d'); ?>" required>
                             </div>
                             <div class="mb-3">
-                                <?php 
-                                    $query = mysqli_query($conn, "SELECT id, nama_produk, harga FROM products ORDER BY id DESC");
+                                <?php
+                                $query = mysqli_query($conn, "SELECT id, nama_produk, harga FROM products ORDER BY id DESC");
                                 ?>
-                                <label for="product_select" class="form-label">Produk <span class="text-danger">*</span></label>
+                                <label for="product_select" class="form-label">Produk <span
+                                        class="text-danger">*</span></label>
                                 <select name="product_select" id="product_select" class="form-control">
                                     <option value="" selected disabled>Pilih Produk</option>
-                                    <?php while ($row = mysqli_fetch_assoc($query)) : ?>
-                                        <option value="<?= $row['id']; ?>" data-harga="<?= $row['harga']; ?>"><?= $row['nama_produk']; ?></option>
+                                    <?php while ($row = mysqli_fetch_assoc($query)): ?>
+                                        <option value="<?= $row['id']; ?>" data-harga="<?= $row['harga']; ?>">
+                                            <?= $row['nama_produk']; ?>
+                                        </option>
                                     <?php endwhile; ?>
                                 </select>
                             </div>
@@ -77,7 +101,8 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="5" class="text-start">Total Harga : <span id="total_harga_produk">0</span></td>
+                                    <td colspan="5" class="text-start">Total Harga : <span
+                                            id="total_harga_produk">0</span></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -85,7 +110,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card rounded shadow">
@@ -99,6 +124,8 @@
     </form>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/4.0.9/jquery.inputmask.bundle.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/4.0.9/jquery.inputmask.bundle.min.js"
+    referrerpolicy="no-referrer"></script>
 <script src="./js/formPenjualan.js"></script>
+<script src="./js/dropdownSearch.js"></script>
 <?php include_once "./layout/footer.php" ?>

@@ -1,28 +1,19 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize inputmask with Rupiah format
-    Inputmask('numeric', {
-        radixPoint: '.',
-        groupSeparator: ',',
-        digits: 2,
-        autoGroup: true,
-        prefix: '',
-        rightAlign: false,
-    }).mask(document.getElementById('harga'));
-});
-
 const form = document.getElementById('form_product');
 
 const inputGamabr = form.querySelector("input[type='file'][name='gambar']");
-const buttonReset = form.querySelector("button[type='reset']");
 const buttonSave = form.querySelector("button[type='submit']");
 const statusMesage = document.getElementById('status_message');
+
+if (productId === '') {
+    const buttonReset = form.querySelector("button[type='reset']");
+    buttonReset.addEventListener('click', resetImagePreview);
+}
 
 form.onsubmit = (e) => {
     e.preventDefault();
 };
 
 inputGamabr.addEventListener('change', previewImage);
-buttonReset.addEventListener('click', resetImagePreview);
 buttonSave.addEventListener('click', saveProduct);
 
 function previewImage(event) {
@@ -49,12 +40,12 @@ function resetImagePreview() {
 
 function saveProduct() {
     let xhr = new XMLHttpRequest();
-    xhr.open('POST', 'php/tambahProduk.php', true);
+    xhr.open('POST', submitUrl, true);
     xhr.onload = function () {
         if (xhr.readyState === XMLHttpRequest.LOADING) {
             statusMesage.classList.add('d-none');
             buttonSave.disabled = true;
-            buttonReset.disabled = true;
+            if (!hasId) buttonReset.disabled = true;
             buttonSave.textContent = 'Memproses...';
         }
 
@@ -68,7 +59,7 @@ function saveProduct() {
                 statusMesage.classList.remove('alert-danger');
                 statusMesage.innerHTML = `<strong>${data}</strong>`;
                 buttonSave.disabled = true;
-                buttonReset.disabled = true;
+                if (!hasId) buttonReset.disabled = true;
                 form.querySelectorAll('input, textarea').forEach(
                     (el) => (el.disabled = true)
                 );
@@ -82,11 +73,17 @@ function saveProduct() {
 
                 buttonSave.disabled = false;
                 buttonSave.textContent = 'Simpan';
-                buttonReset.disabled = false;
+
+                if (!hasId) {
+                    buttonReset.disabled = false;
+                }
             }
         }
     };
 
     let formData = new FormData(form);
+    if (hasId) {
+        formData.append('productId', parseInt(productId));
+    }
     xhr.send(formData);
 }

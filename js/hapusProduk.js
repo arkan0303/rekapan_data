@@ -8,6 +8,7 @@ function deleteProduct(button) {
             const statusMessage = document.getElementById('status_message');
             statusMessage.classList.remove('d-none');
             statusMessage.innerHTML = `<strong>${xhr.response}</strong>`;
+            window.scrollTo(0, 0);
             if (xhr.response.toLowerCase().includes('berhasil')) {
                 statusMessage.classList.add('alert-success');
             } else {
