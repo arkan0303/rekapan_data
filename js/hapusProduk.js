@@ -15,7 +15,7 @@ function deleteProduct(button) {
                 statusMessage.classList.add('alert-danger');
             }
             setTimeout(() => {
-                location.reload();
+                location.href = '/';
             }, 2000);
         }
     };

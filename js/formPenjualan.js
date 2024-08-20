@@ -99,6 +99,7 @@ function submitPenjualan() {
 function resetAll() {
     productTable.querySelector('tbody').innerHTML = '';
     recreateInitialRow();
+    updateTotalHarga();
 }
 
 function insertProductTable() {

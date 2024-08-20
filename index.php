@@ -117,7 +117,7 @@ function buildQueryString($paramKey, $paramValue)
                                 <td class="text-center align-middle money_format"><?= $row['harga']; ?></td>
                                 <td class="text-center align-middle money_format"><?= $row['harga'] + ($row['harga'] * 0.11); ?>
                                 </td>
-                                <td class="text-center align-middle"><a class="btn btn-outline-info btn-sm rounded"
+                                <td class="text-center align-middle"><a class="btn btn-outline-dark btn-sm rounded"
                                         href="produk.php?id=<?= $row['id']; ?>">Detail</a>
 
                                 </td>
