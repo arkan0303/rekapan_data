@@ -49,9 +49,21 @@ if ($orderId) {
         exit;
     }
 
+    // Update customer name
+    $updateCustomerSql = "UPDATE customers SET nama = ? WHERE id = ?";
+    $customerStmt = mysqli_prepare($conn, $updateCustomerSql);
+    mysqli_stmt_bind_param($customerStmt, "si", $namaPembeli, $idPembeli);
+    $customerExec = mysqli_stmt_execute($customerStmt);
+
+    if (!$customerExec) {
+        mysqli_rollback($conn);
+        echo "Gagal mengupdate nama konsumen.";
+        exit;
+    }
+
+    // Delete old products
     $deleteProducts = mysqli_prepare($conn, "DELETE FROM order_products WHERE order_id = ?");
     mysqli_stmt_bind_param($deleteProducts, "i", $orderId);
-
     $deleteProductsExec = mysqli_stmt_execute($deleteProducts);
     if (!$deleteProductsExec) {
         mysqli_rollback($conn);
@@ -59,6 +71,7 @@ if ($orderId) {
         exit;
     }
 
+    // Insert new products
     $insertProductSql = "INSERT INTO order_products (order_id, product_id, qty) VALUES (?, ?, ?)";
     $productStmt = mysqli_prepare($conn, $insertProductSql);
 
@@ -74,7 +87,6 @@ if ($orderId) {
             exit;
         }
     }
-
 
     // Commit the transaction
     mysqli_commit($conn);

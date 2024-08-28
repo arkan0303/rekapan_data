@@ -16,7 +16,7 @@
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <title>Rekapan Data Penjualan</title>
+    <title>Db_data_penjualan</title>
 </head>
 
 <body>

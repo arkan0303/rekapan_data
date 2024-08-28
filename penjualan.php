@@ -53,7 +53,7 @@ $hasId = isset($_GET['id']) && !empty($_GET['id']);
                         <h3 class="text-center">Form Penjualan</h3>
                         <div>
                             <div class="mb-3">
-                                <label for="nama_pembeli" class="form-label">Nama Pembeli <span
+                                <label for="nama_pembeli" class="form-label">Konsumen<span
                                         class="text-danger">*</span></label>
                                 <div class="custom-dropdown-search">
                                     <div class="custom-input-container">

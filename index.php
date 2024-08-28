@@ -103,7 +103,7 @@ function buildQueryString($paramKey, $paramValue)
                     ?>
                     <?php if (mysqli_num_rows($query) < 1): ?>
                         <tr>
-                            <td colspan="6" class="text-center fw-bold">Tidak ada data.</td>
+                            <td colspan="6" class="text-center fw-bold">Tidak ada data...</td>
                         </tr>
                     <?php else: ?>
                         <?php $no = $offset + 1; ?>
