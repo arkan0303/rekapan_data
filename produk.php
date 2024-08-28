@@ -122,6 +122,9 @@ $hasId = isset($_GET['id']) && !empty($_GET['id']);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/4.0.9/jquery.inputmask.bundle.min.js"
     referrerpolicy="no-referrer"></script>
 <script>
+    let submitUrl = "";
+    let productId = "";
+
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize inputmask with Rupiah format
         Inputmask('numeric', {
@@ -133,10 +136,7 @@ $hasId = isset($_GET['id']) && !empty($_GET['id']);
             rightAlign: false,
         }).mask(document.getElementById('harga'));
     });
-    const params = new URLSearchParams(window.location.search);
-
-    let submitUrl = "";
-    let productId = "";
+    const params = new URLSearchParams(window.location.search);    
 
     let hasId = params.has("id") && params.get("id") !== ""
 
