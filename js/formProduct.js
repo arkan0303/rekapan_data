@@ -1,3 +1,28 @@
+let submitUrl = "";
+    let productId = "";
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize inputmask with Rupiah format
+        Inputmask('numeric', {
+            radixPoint: '.',
+            groupSeparator: ',',
+            digits: 2,
+            autoGroup: true,
+            prefix: '',
+            rightAlign: false,
+        }).mask(document.getElementById('harga'));
+    });
+    const params = new URLSearchParams(window.location.search);    
+
+    let hasId = params.has("id") && params.get("id") !== ""
+
+    if (hasId) {
+        submitUrl = "php/ubahProduk.php";
+        productId = params.get("id");
+    } else {
+        submitUrl = "php/tambahProduk.php";
+    }
+
 const form = document.getElementById('form_product');
 
 const inputGamabr = form.querySelector("input[type='file'][name='gambar']");
