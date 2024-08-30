@@ -25,70 +25,38 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function exportExcel() {
-    const table = document.getElementById('table_penjualan');
+document.getElementById('exportBtn').addEventListener('click', function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'php/exportExcel.php', true);
+    xhr.responseType = 'blob'; // Set response type to blob
 
-    let payload = [];
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Create a link element to trigger the download
+            const blob = xhr.response;
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
 
-    const tanggalOrder = table.querySelectorAll(
-        "tbody td[data-column='tanggal_order']"
-    );
-    const namaPembeli = table.querySelectorAll(
-        "tbody td[data-column='nama_pembeli']"
-    );
-    table
-        .querySelectorAll("tbody td[data-column='total_harga']")
-        .forEach((el, index) => {
-            const data = {
-                namaPembeli: namaPembeli[index].textContent,
-                tanggalOrder: tanggalOrder[index].textContent,
-                totalHarga: el.textContent,
-            };
+            // Get the filename from the Content-Disposition header or use a default name
+            const contentDisposition = xhr.getResponseHeader(
+                'Content-Disposition'
+            );
+            const filename = contentDisposition
+                ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+                : 'export.xlsx';
 
-            payload.push(data);
-        });
-
-    const worksheet = XLSX.utils.json_to_sheet(payload);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Penjualan');
-
-    worksheet['A1'].s = {
-        font: { bold: true },
-        alignment: { horizontal: 'center', vertical: 'middle' },
-    };
-    worksheet['B1'].s = {
-        font: { bold: true },
-        alignment: { horizontal: 'center', vertical: 'middle' },
-    };
-    worksheet['C1'].s = {
-        font: { bold: true },
-        alignment: { horizontal: 'center', vertical: 'middle' },
+            link.download = filename; // Set the download attribute with the filename
+            document.body.appendChild(link);
+            link.click(); // Programmatically click the link to trigger the download
+            document.body.removeChild(link); // Remove the link after triggering the download
+        } else {
+            console.error('Error:', xhr.statusText);
+        }
     };
 
-    const columnWidths = payload.map((row) => [
-        row.namaPembeli.length,
-        row.tanggalOrder.length,
-        row.totalHarga.length,
-    ]);
-    const maxColumnWidths = columnWidths.reduce(
-        (acc, curr) => [
-            Math.max(acc[0], curr[0]),
-            Math.max(acc[1], curr[1]),
-            Math.max(acc[2], curr[2]),
-        ],
-        [0, 0, 0]
-    );
+    xhr.onerror = function () {
+        console.error('Request failed');
+    };
 
-    worksheet['!cols'] = maxColumnWidths.map((width) => ({ wch: width }));
-
-    XLSX.utils.sheet_add_aoa(
-        worksheet,
-        [['Nama Pembeli', 'Tanggal Order', 'Total Harga']],
-        { origin: 'A1' }
-    );
-
-    const filename = 'RekapanData' + new Date().toISOString() + '.xlsx';
-    XLSX.writeFile(workbook, filename, { compression: true });
-}
-
-document.getElementById('export_excel').addEventListener('click', exportExcel);
+    xhr.send(); // Send the request
+});

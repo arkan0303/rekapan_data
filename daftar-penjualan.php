@@ -123,7 +123,7 @@ function buildSqlQuery($sql)
                 <div class="card-body">
                     <div class="d-flex justify-content-start gap-1 align-items-center mb-1">
                         <a href="penjualan.php" class="btn btn-secondary">Tambah Data Penjualan</a>
-                        <button type="button" class="btn btn-success" id="export_excel">Export Excel</button>
+                        <button type="button" class="btn btn-success" id="exportBtn">Export Excel</button>
                     </div>
                     <table class="table table-hover table-light" id="table_penjualan">
                         <thead class="table-dark">
