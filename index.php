@@ -60,6 +60,9 @@ function buildQueryString($paramKey, $paramValue)
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
                 <div>
+                <?php if (isset($_SESSION['unique_id'])): ?>
+    <a href="logout.php" class="btn btn-danger">Logout</a>
+<?php endif; ?>
                     <a href="daftar-penjualan.php" class="btn btn-secondary">Daftar Penjualan</a>
                     <a href="tambah-produk.php" class="btn btn-secondary">Tambah Produk</a>
                 </div>
