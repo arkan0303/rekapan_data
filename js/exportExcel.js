@@ -3,7 +3,7 @@ document.getElementById('exportBtn').addEventListener('click', function () {
     const xhr = new XMLHttpRequest();
 
     // Configure it: GET-request for the URL /export_excel.php
-    xhr.open('GET', 'php/export_excel.php', true);
+    xhr.open('GET', 'php/exportExcel.php', true);
     xhr.responseType = 'blob'; // Expect a binary response (blob)
 
     // Set up a callback function to handle the response
